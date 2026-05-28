@@ -28,7 +28,8 @@ A Python CLI tool for file integrity monitoring on Linux. It compares the curren
 - SQLite baseline as the reference for subsequent scans
 - Change detection: new/deleted files, content modifications, metadata changes
 - Alert levels: `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` (YAML rules or `alerts` profile)
-- Terminal reports (Rich) plus optional JSON export
+- Terminal reports (Rich) plus JSON and HTML export
+- Simple Tkinter GUI (`gui` command)
 - Selective baseline extension (`add-baseline`) without replacing the entire baseline
 - Single-file verification (`verify`) without writing alerts to the database
 - Explicit exit codes for scripts and cron integration
@@ -129,6 +130,8 @@ All commands accept `--config` / `-c` (default: `config.example.yaml`).
 | `add-baseline` | Add file/directory to baseline without full `init` |
 | `list-baseline` | Display current baseline (Rich table, read-only) |
 | `report` | Event history from database |
+| `export-html` | Export event history to a standalone HTML file |
+| `gui` | Launch graphical interface (Tkinter) |
 
 ### `init` / `scan`
 
@@ -177,7 +180,45 @@ Possible statuses: `OK`, `MODIFIED`, `DELETED`, `NOT_IN_BASELINE`, metadata type
 ```bash
 python -m fim report --config config.example.yaml
 python -m fim report --config config.example.yaml --json reports/report.json
+python -m fim report --config config.example.yaml --html reports/report.html
 ```
+
+### `export-html`
+
+```bash
+python -m fim export-html --config config.example.yaml -o reports/report.html
+```
+
+Opens a self-contained HTML page with event table, severity summary, and optional scan stats.
+
+### `gui`
+
+```bash
+python -m fim gui --config config.example.yaml
+# or
+python -m fim.gui
+```
+
+The GUI uses the **same YAML config** and **same SQLite database** as the CLI. It is a scan-on-demand desktop helper, not a background daemon.
+
+**Requirements:** graphical session (X11/Wayland), Python `tkinter` (`python3-tk` on Kali).
+
+**Features:**
+
+| Area | Actions |
+|------|---------|
+| Configuration | Browse/load YAML, read-only preview of paths, exclude, database, severity |
+| Baseline | Create baseline (init), browse baseline with filters |
+| Scan | Run scan, view statistics, update alerts table |
+| Alerts | Load via **Apply filters** (same as `fim report`), filter by limit/type/severity; double-click for details |
+| Verify | Check one file against baseline (no DB write) |
+| Add to baseline | Add file/directory with recursive/force/reason |
+| Export | JSON or HTML for current/filtered alerts |
+| Log | Operation progress, errors, warnings (bottom panel) |
+
+Long operations (`init`, `scan`) run in a **background thread** so the window stays responsive.
+
+**`config.security.yaml`:** the GUI shows a warning that system paths may require `sudo` and that some files can be skipped. The GUI does **not** run `sudo` automatically.
 
 ---
 
@@ -250,6 +291,9 @@ fim/
   database.py         # SQLite (baseline + events)
   verify.py           # single-file verification
   reporter.py         # tables and scan summaries
+  html_report.py      # HTML export
+  gui/                # Tkinter GUI (app, widgets, dialogs)
+  actions.py          # shared backend operations for GUI
   config.py           # YAML loading
   monitor_paths.py    # path globs, exclude paths/patterns
 tests/                # pytest

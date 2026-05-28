@@ -9,6 +9,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
+from fim.html_report import export_html  # re-export for convenience
 from fim.models import IntegrityEvent, ScanStats
 
 _console = Console()

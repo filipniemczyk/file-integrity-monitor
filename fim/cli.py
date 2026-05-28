@@ -21,6 +21,8 @@ from fim.exit_codes import (
     EXIT_SCAN_ERROR,
     EXIT_SUCCESS,
 )
+from fim.gui import launch_gui
+from fim.html_report import export_html
 from fim.reporter import build_scan_stats, export_json, print_events, print_scan_summary
 from fim.scanner import scan_paths
 from fim.verify import is_verify_success, verify_file
@@ -293,7 +295,13 @@ def verify(ctx: click.Context, file_path: str, config: str) -> None:
     default=None,
     help="Also write results to a JSON file.",
 )
-def report(ctx: click.Context, config: str, json_path: str | None) -> None:
+@click.option(
+    "--html",
+    "html_path",
+    default=None,
+    help="Also write results to an HTML file.",
+)
+def report(ctx: click.Context, config: str, json_path: str | None, html_path: str | None) -> None:
     """Show event history from the database."""
     try:
         cfg = load_config(config)
@@ -303,6 +311,46 @@ def report(ctx: click.Context, config: str, json_path: str | None) -> None:
         if json_path:
             export_json(events, json_path)
             _console.print(f"[green]JSON saved:[/green] {json_path}")
+        if html_path:
+            saved = export_html(events, html_path)
+            _console.print(f"[green]HTML saved:[/green] {saved}")
         ctx.exit(EXIT_SUCCESS)
     except (ConfigError, DatabaseError, FIMError) as error:
+        _fail(ctx, error)
+
+
+@cli.command("export-html")
+@click.pass_context
+@_config_option
+@click.option(
+    "--output",
+    "-o",
+    "output_path",
+    default="reports/report.html",
+    show_default=True,
+    help="Path to the HTML report file.",
+)
+def export_html_cmd(ctx: click.Context, config: str, output_path: str) -> None:
+    """Export event history from the database to HTML."""
+    try:
+        from fim.actions import run_export_html_report
+
+        result = run_export_html_report(config, output_path)
+        if not result.success:
+            raise DatabaseError(result.message)
+        _console.print(f"[green]{result.message}[/green]")
+        ctx.exit(EXIT_SUCCESS)
+    except (ConfigError, DatabaseError, FIMError) as error:
+        _fail(ctx, error)
+
+
+@cli.command()
+@click.pass_context
+@_config_option
+def gui(ctx: click.Context, config: str) -> None:
+    """Launch the graphical interface."""
+    try:
+        launch_gui(default_config=config)
+        ctx.exit(EXIT_SUCCESS)
+    except Exception as error:
         _fail(ctx, error)
