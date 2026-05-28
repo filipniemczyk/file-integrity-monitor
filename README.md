@@ -58,7 +58,7 @@ pip install -r requirements-dev.txt
 
 ## Quick start
 
-Simple local demo — **no root**, using `./watched`:
+Simple local demo (**no root**), using `./watched`:
 
 ```bash
 mkdir -p watched
@@ -123,7 +123,7 @@ All commands accept `--config` / `-c` (default: `config.example.yaml`).
 
 | Command | Description |
 |---------|-------------|
-| `init` | Create baseline — full scan and save to database |
+| `init` | Create baseline (full scan and save to database) |
 | `scan` | Scan, compare with baseline, save events |
 | `verify` | Check a **single** file against baseline (no alert persistence) |
 | `add-baseline` | Add file/directory to baseline without full `init` |
@@ -240,7 +240,7 @@ esac
 
 ```text
 fim/
-  cli.py              # Click — CLI entry points
+  cli.py              # Click: CLI entry points
   scanner.py          # scanning and file snapshots
   hasher.py           # SHA-256
   baseline.py         # baseline read/write, add-baseline
@@ -309,11 +309,11 @@ See the walkthrough in [`config.severity-demo.yaml`](config.severity-demo.yaml).
 ## Notes
 
 - `*.db` files are local and should not be committed (see `.gitignore`).
-- With `config.security.yaml`, some paths may not exist on a given machine — the scanner skips them with a warning.
+- With `config.security.yaml`, some paths may not exist on a given machine; the scanner skips them with a warning.
 - `init` **replaces** the entire baseline; use `add-baseline` to add individual paths.
 
 ---
 
 ## License
 
-Team project — CBE / File Integrity Monitor.
+Team project: CBE / File Integrity Monitor.
