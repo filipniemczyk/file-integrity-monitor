@@ -1,0 +1,67 @@
+# =============================================================================
+# Demo wszystkich poziomów severity — jeden config, Kali Linux
+# =============================================================================
+#
+# Mapowanie (analyzer.py):
+#   CRITICAL  → /etc/sudoers (i inne ścieżki z listy CRITICAL w kodzie)
+#   HIGH      → /etc/passwd
+#   MEDIUM    → MODIFIED / DELETED w ./watched
+#   LOW       → CREATED / METADATA_CHANGED w ./watched
+#
+# Uruchomienie pełnego demo (jeden skan, wiele zdarzeń):
+#
+#   source .venv/bin/activate
+#   sudo cp /etc/passwd /etc/passwd.bak.fim
+#   sudo cp /etc/sudoers /etc/sudoers.bak.fim
+#
+#   # --- baseline ---
+#   rm -f watched/*
+#   echo "baseline" > watched/plik.txt
+#   echo "usun mnie" > watched/do-usuniecia.txt
+#   sudo python -m fim init --config config.severity-demo.yaml
+#
+#   # --- zmiany przed jednym skanem ---
+#   echo "nowy" > watched/nowy.txt              # CREATED  → LOW
+#   chmod 600 watched/plik.txt                  # METADATA → LOW (hash bez zmian)
+#   echo "zmiana" >> watched/plik.txt             # MODIFIED → MEDIUM
+#   rm watched/do-usuniecia.txt                   # DELETED  → MEDIUM
+#   echo "# fim-demo" | sudo tee -a /etc/passwd   # MODIFIED → HIGH
+#   echo "# fim-demo" | sudo tee -a /etc/sudoers  # MODIFIED → CRITICAL
+#
+#   sudo python -m fim scan --config config.severity-demo.yaml
+#   python -m fim report --config config.severity-demo.yaml
+#
+#   # --- przywrócenie systemu ---
+#   sudo cp /etc/passwd.bak.fim /etc/passwd
+#   sudo cp /etc/sudoers.bak.fim /etc/sudoers
+#   rm -f fim-severity-demo.db
+#
+# Uwaga: init/scan na /etc/passwd i /etc/sudoers wymaga sudo (odczyt/zapis).
+# =============================================================================
+
+monitor:
+  paths:
+    - ./watched
+    - /etc/passwd
+    - /etc/sudoers
+  exclude:
+    - "*.log"
+    - "*.tmp"
+    - "__pycache__"
+    - ".git"
+
+hash:
+  algorithm: sha256
+
+database:
+  path: fim-severity-demo.db
+
+alerts:
+  critical:
+    - /etc/shadow
+    - /etc/sudoers
+    - /root/.ssh/authorized_keys
+  high:
+    - /etc/passwd
+    - /etc/group
+    - /etc/ssh

@@ -1,0 +1,18 @@
+# Simple demo config — works without root (local ./watched only).
+# For Linux system paths and alert levels, use config.security.yaml.
+
+monitor:
+  paths:
+    - ./watched
+  exclude:
+    - "*.log"
+    - "*.tmp"
+    - "__pycache__"
+    - ".git"
+    - ".gitkeep"
+
+hash:
+  algorithm: sha256
+
+database:
+  path: fim.db

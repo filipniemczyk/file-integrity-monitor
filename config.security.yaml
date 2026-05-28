@@ -1,0 +1,129 @@
+# Security-focused FIM configuration for Linux (requires root for most paths).
+# Alert levels in `alerts` drive severity; `monitor.paths` lists every scanned location.
+
+monitor:
+  paths:
+    # critical
+    - /etc/passwd
+    - /etc/shadow
+    - /etc/sudoers
+    - /etc/sudoers.d
+    - /etc/group
+    - /etc/gshadow
+    - /root/.ssh/authorized_keys
+    - /etc/ssh/sshd_config
+    - /etc/pam.d
+    - /etc/cron.d
+    - /etc/crontab
+    - /var/spool/cron
+    - /etc/ld.so.preload
+    - /etc/bash.bashrc
+    - /root/.bashrc
+    - /root/.profile
+    # high
+    - /etc/security
+    - /etc/login.defs
+    - /etc/securetty
+    - /etc/systemd/system
+    - /lib/systemd/system
+    - /usr/lib/systemd/system
+    - /etc/ld.so.conf
+    - /etc/ld.so.conf.d
+    - /etc/profile
+    # medium
+    - /etc/hosts
+    - /etc/resolv.conf
+    - /etc/fstab
+    - /etc/sysctl.conf
+    - /etc/sysctl.d
+    - /etc/apt/sources.list
+    - /etc/apt/sources.list.d
+    - /home/*/.ssh/authorized_keys
+    - /home/*/.bashrc
+    - /home/*/.profile
+    - /home/*/.config/autostart
+    # low
+    - ./watched
+    - ./test_files
+    - /etc/issue
+    - /etc/motd
+    - /home/*/.vimrc
+    - /home/*/.nanorc
+    - /home/*/.gitconfig
+    - /home/*/.bash_aliases
+    - /usr/local/etc
+  exclude:
+    paths:
+      - /proc
+      - /sys
+      - /dev
+      - /run
+      - /tmp
+      - /var/tmp
+      - /var/cache
+      - /mnt
+      - /media
+    patterns:
+      - "*.log"
+      - "*.tmp"
+      - ".git"
+      - "__pycache__"
+
+hash:
+  algorithm: sha256
+
+database:
+  path: fim-security.db
+
+alerts:
+  critical:
+    - /etc/passwd
+    - /etc/shadow
+    - /etc/sudoers
+    - /etc/sudoers.d
+    - /etc/group
+    - /etc/gshadow
+    - /root/.ssh/authorized_keys
+    - /etc/ssh/sshd_config
+    - /etc/pam.d
+    - /etc/cron.d
+    - /etc/crontab
+    - /var/spool/cron
+    - /etc/ld.so.preload
+    - /etc/bash.bashrc
+    - /root/.bashrc
+    - /root/.profile
+  high:
+    - /etc/security
+    - /etc/login.defs
+    - /etc/securetty
+    - /etc/cron.d
+    - /etc/systemd/system
+    - /lib/systemd/system
+    - /usr/lib/systemd/system
+    - /etc/ld.so.conf
+    - /etc/ld.so.conf.d
+    - /etc/profile
+    - /etc/bash.bashrc
+  medium:
+    - /etc/hosts
+    - /etc/resolv.conf
+    - /etc/fstab
+    - /etc/sysctl.conf
+    - /etc/sysctl.d
+    - /etc/apt/sources.list
+    - /etc/apt/sources.list.d
+    - /home/*/.ssh/authorized_keys
+    - /home/*/.bashrc
+    - /home/*/.profile
+    - /home/*/.config/autostart
+  low:
+    - ./watched
+    - ./test_files
+    - /etc/issue
+    - /etc/motd
+    - /home/*/.vimrc
+    - /home/*/.nanorc
+    - /home/*/.gitconfig
+    - /home/*/.bash_aliases
+    - /usr/local/etc

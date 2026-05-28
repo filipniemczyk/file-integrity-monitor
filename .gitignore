@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+fim.db
+watched/*
+!watched/.gitkeep
+reports/*
+!reports/.gitkeep
